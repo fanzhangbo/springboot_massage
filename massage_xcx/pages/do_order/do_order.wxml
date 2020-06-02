@@ -1,0 +1,38 @@
+<view class="container">
+
+  <view class="input-body">
+    <view class="title">{{name}}</view>
+  </view>
+
+
+  <form catchsubmit="formSubmit">
+    <view class="input-body">
+      <view class="title">选择技师</view>
+      <picker bindchange="bindPickerChange" name="worker_idx" range-key="name" value="{{index}}" range="{{worker_list}}">
+        <view class="picker">
+          点击选择：{{worker_list[index].name}}
+        </view>
+      </picker>
+    </view>
+  <view class="input-body">
+    <view class="title">选择日期</view>
+    <picker mode="date" value="{{date}}" name="orderDate" start="{{startDate}}" end="2020-12-31" bindchange="bindDateChange">
+      <view class="picker">
+        点击选择: {{date}}
+      </view>
+    </picker>
+  </view>
+
+  <view class="input-body">
+    <view class="title">选择时间</view>
+    <radio-group bindchange="radioChange">
+    <view wx:for="{{timeArr}}" wx:key="{{item.value}}">
+      <label class="radio-item">
+          <radio value="{{item.value}}" name="orderTime" disabled="{{item.disabled}}" /> <span>{{item.name}}</span>
+      </label>
+      </view>
+    </radio-group>
+  </view>
+    <button style="margin: 30rpx auto" type="primary" formType="submit">提交</button>
+  </form>
+</view>

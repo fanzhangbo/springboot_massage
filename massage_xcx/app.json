@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/change_pass/change_pass",
+    "pages/index/index",
+    "pages/morder/morder",
+    "pages/user/user",
+    "pages/logs/logs",
+    "pages/massage_detail/massage_detail",
+    "pages/do_order/do_order"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "推拿",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#f00",
+    "selectedColor": "#0f0",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/morder/morder",
+        "text": "我的预约"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "个人中心"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,14 @@
+<view class="container">
+
+  <view class="header">
+    <view class="detail-img">
+      <image src="{{massage.img}}"></image>
+    </view>
+    <view class="title">{{massage.name}}</view>
+  </view>
+  <view class="content">
+    {{massage.description}}
+  </view>
+  
+  <view class="do-order-btn" data-id="{{massage.id}}"  data-name="{{item.name}}"    bindtap="do_order">预  约</view>
+</view>

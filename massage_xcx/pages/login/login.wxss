@@ -1,0 +1,18 @@
+.container {
+  height: 100%;
+  display: flex;
+  box-sizing: border-box;
+  padding: 20rpx;
+  flex-direction: column;
+}
+.input-body {
+  margin: 10rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  font-size: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+.input-body .title {
+  margin-bottom: 10rpx;
+}

@@ -1,0 +1,10 @@
+<view class="container">
+  <view class="m-item" wx:for="{{massage_list}}" wx:key="index"  data-id="{{item.id}}" bindtap="show_detail">
+    <view class="prev-img">
+      <image src="{{host + item.img}}" />
+    </view>
+    <view class="title">{{item.name}}</view>
+    <view class="price">{{item.price}}元</view>
+    <view class="do-order" data-id="{{item.id}}" data-name="{{item.name}}" catchtap="do_order">预约</view>
+  </view>
+</view>

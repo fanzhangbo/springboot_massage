@@ -1,0 +1,28 @@
+.container {
+  height: 100%;
+  display: flex;
+  box-sizing: border-box;
+  background-color: #f7f7f7;
+  flex-direction: column;
+  
+}
+.desp {
+  width: 100%;
+  height: 20rpx;
+}
+.user-item {
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.logout-btn {
+  width: 80%;
+  background-color: red;
+  margin: 50rpx 0rpx;
+  color: #fff;
+  
+}

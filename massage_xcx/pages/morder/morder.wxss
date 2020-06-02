@@ -1,0 +1,72 @@
+.container {
+  height: 100%;
+  display: flex;
+  box-sizing: border-box;
+  background-color: #f7f7f7;
+  padding: 20rpx;
+  flex-direction: column;
+}
+.m-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 100%;
+  height: 500rpx;
+  background-color: #fff;
+  border-radius: 40rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 1px 1px 0 rgba(0,0,0,.2 );
+}
+.m-item .prev-img {
+  overflow: hidden;
+  width: 150rpx;
+  height: 150rpx;
+  margin: 25rpx;
+  border-radius: 30rpx;
+}
+.m-item .prev-img image {
+  width: 100%;
+  height: 100%;
+}
+.m-item .title {
+  line-height: 150rpx;
+  font-size: 40rpx;
+  color: #333;
+  width: 490rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.m-item .do-order {
+  position: absolute;
+  right: 14rpx;
+  bottom: 14rpx;
+  padding: 10rpx 30rpx;
+  border-radius: 40rpx;
+  font-size: 34rpx;
+  color: #fff;
+}
+.m-item .do-order.now {
+  background-color: rgb(25, 0, 253);
+}
+
+
+.m-item .do-order.over {
+  background-color: rgb(253, 0, 0);
+}
+.m-item .worker {
+  position: absolute;
+  left: 25rpx;
+  top: 220rpx;
+}
+.m-item .create {
+  position: absolute;
+  left: 25rpx;
+  top: 280rpx;
+}
+.m-item .order {
+  position: absolute;
+  left: 25rpx;
+  top: 340rpx;
+}

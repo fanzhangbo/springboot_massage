@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="m-item" wx:for="{{massage_list}}" wx:key="index"  data-id="{{item.id}}" >
+    <view class="prev-img">
+      <image src="{{host + item.massageImg}}" />
+    </view>
+    <view class="title">{{item.massageName}}</view>
+    <view class="worker">技师：{{item.workerName}}</view>
+    <view class="create">预约时间：{{item.orderTime}}</view>
+    <view class="order">创建时间：{{item.createTime}}</view>
+    <view wx:if="{{item.status == 0}}" class="do-order now">已预约</view>
+    <view wx:if="{{item.status == 1}}" class="do-order over">已完成</view>
+  </view>
+</view>

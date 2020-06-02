@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="desp"></view>
+  <view class="user-item">
+    <text class="title">姓名：</text>
+    <text class="content">{{user.username}}</text>
+  </view>
+  <view class="user-item">
+    <text class="title">电话：</text>
+    <text class="content">{{user.phone}}</text>
+  </view>
+  <view class="desp"></view>
+  <view class="user-item">
+    <text class="title">余额：</text>
+    <text class="content">￥{{user.money}}元</text>
+  </view>
+  <view class="desp"></view>
+  <view class="user-item" bindtap="change_pass">
+    <text class="title">更改密码</text>
+    <text class="content"></text>
+  </view>
+  <view class="desp"></view>
+  <button class="logout-btn" bindtap="logout">退出</button>
+</view>

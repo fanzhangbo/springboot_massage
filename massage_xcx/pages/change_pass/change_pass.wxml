@@ -1,0 +1,14 @@
+<view class="container">
+  <form catchsubmit="formSubmit">
+    <view class="input-body">
+      <view class="title">旧密码：</view>
+      <input type="password" name="old_password" placeholder="请输入旧密码"/>
+    </view>
+
+    <view class="input-body">
+      <view class="title">新密码：</view>
+      <input type="password" name="password" placeholder="请输入新密码"/>
+    </view>
+    <button style="margin: 30rpx auto" type="primary" formType="submit">提交</button>
+  </form>
+</view>
