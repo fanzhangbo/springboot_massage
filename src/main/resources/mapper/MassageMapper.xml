@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.MassageMapper">
+    <select id="listMassage" parameterType="Map" resultType="Massage">
+        SELECT * FROM massage WHERE 1=1
+        <if test="name != null and name != ''" >
+            AND name=#{name}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="findMassageById" parameterType="Long" resultType="Massage" >
+        select * FROM massage WHERE id=#{id}
+    </select>
+
+    <insert id="addMassage" parameterType="Massage" >
+        INSERT INTO massage(name,img, description, price, create_time)
+        VALUES (#{name},#{img},#{description},#{price},#{createTime})
+    </insert>
+
+    <update id="updateMassage" parameterType="Massage">
+        UPDATE massage
+        <set>
+            <if test="name != null and name != ''">
+                name=#{name}
+            </if>
+            <if test="img != null and img != ''">
+                ,img=#{img}
+            </if>
+            <if test="description != null and description != ''">
+                ,description=#{description}
+            </if>
+            <if test="price != null and price != ''">
+                ,price=#{price}
+            </if>
+        </set>
+         WHERE id=#{id}
+    </update>
+
+    <delete id="delMassage" parameterType="Long">
+        DELETE FROM massage WHERE id=#{id}
+    </delete>
+</mapper>

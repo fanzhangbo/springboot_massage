@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.MassageOrderMapper">
+    <select id="listMassageOrder" parameterType="Map" resultType="MassageOrder">
+        SELECT * FROM massage_order WHERE 1=1
+        <if test="userId != null and userId != ''" >
+            AND user_id=#{userId}
+        </if>
+        <if test="workerId != null and workerId != ''" >
+            AND worker_id=#{workerId}
+        </if>
+        <if test="massageId != null and massageId != ''" >
+            AND massage_id=#{massageId}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+
+    <select id="listTotalMassageOrder" parameterType="Map" resultType="MassageOrder">
+        SELECT mo.*,u.username,w.name AS workerName,m.name AS massageName,m.img AS massageImg FROM massage_order mo
+        LEFT  JOIN user u ON mo.user_id=u.id
+        LEFT JOIN worker w ON mo.worker_id=w.id
+        LEFT JOIN massage m ON mo.massage_id=m.id
+        WHERE 1=1
+        <if test="userId != null and userId != ''" >
+            AND mo.user_id=#{userId}
+        </if>
+        <if test="workerId != null and workerId != ''" >
+            AND mo.worker_id=#{workerId}
+        </if>
+        <if test="massageId != null and massageId != ''" >
+            AND mo.massage_id=#{massageId}
+        </if>
+
+        <if test="orderTime != null and orderTime != ''" >
+            AND date_format(mo.order_time,'%Y-%m-%d')=#{orderTime}
+        </if>
+        ORDER BY mo.id DESC
+    </select>
+
+    <select id="findMassageOrderById" parameterType="Long" resultType="MassageOrder" >
+        select * FROM massage_order WHERE id=#{id}
+    </select>
+
+    <insert id="addMassageOrder" parameterType="MassageOrder" >
+        INSERT INTO massage_order(user_id,worker_id,massage_id,order_time,create_time,edit_time)
+        VALUES (#{userId},#{workerId},#{massageId},#{orderTime},#{createTime},#{editTime})
+    </insert>
+
+    <update id="updateMassageOrder" parameterType="MassageOrder">
+        UPDATE massage_order
+        <set>
+            <if test="userId != null and userId != ''" >
+                ,user_id=#{userId}
+            </if>
+            <if test="workerId != null and workerId != ''" >
+                ,worker_id=#{workerId}
+            </if>
+            <if test="massageId != null and massageId != ''" >
+                ,massage_id=#{massageId}
+            </if>
+            <if test="status != null" >
+                ,status=#{status}
+            </if>
+            <if test="editTime != null and editTime != ''" >
+                ,edit_time=#{editTime}
+            </if>
+        </set>
+         WHERE id=#{id}
+    </update>
+
+    <delete id="delMassageOrder" parameterType="Long">
+        DELETE FROM massage_order WHERE id=#{id}
+    </delete>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.PermissionMapper">
+    <resultMap id="permissionMap" type="permission">
+        <id property="permissionId" column="permission_id"></id>
+        <result property="permissionName" column="permission_name"></result>
+        <result property="pid" column="pid"></result>
+        <result property="password" column="password"></result>
+    </resultMap>
+
+
+    <select id="listPermission" resultMap="permissionMap">
+        SELECT permission_id,permission_name,pid,perms,url FROM permission
+    </select>
+
+    <select id="listPermsAndUrl" resultType="permission">
+        SELECT perms,url FROM permission
+    </select>
+
+    <select id="findPermissionById" parameterType="Long" resultType="permission" >
+        select permission_id,permission_name,pid,perms,url FROM permission WHERE permission_id=#{permissionId}
+    </select>
+
+
+    <select id="listPermissionByAdminId" parameterType="Long" resultType="permission">
+        SELECT p.permission_id,p.permission_name,p.perms,p.url,p.pid FROM permission p
+        INNER JOIN role_permission rp on rp.permission_id=p.permission_id
+        INNER JOIN admin_role ar on ar.role_id=rp.role_id
+        WHERE ar.admin_id=#{admin_id}
+    </select>
+
+
+
+
+
+    <insert id="addPermission" parameterType="permission" >
+        INSERT INTO permission(permission_name,pid,perms,url) VALUES (#{permissionName},#{pid},#{perms},#{url})
+    </insert>
+
+    <update id="updatePermission" parameterType="Permission">
+        UPDATE permission
+        <set>
+            <if test="permissionName != null and permissionName != ''">
+                permission_name=#{permissionName}
+            </if>
+            <if test="pid != null and pid != ''">
+                ,pid=#{pid}
+            </if>
+            <if test="perms != null and perms != ''">
+                ,perms=#{perms}
+            </if>
+            <if test="url != null and url != ''">
+                ,url=#{url}
+            </if>
+        </set>
+        WHERE permission_id=#{permissionId}
+    </update>
+
+    <delete id="delPermission" parameterType="Long">
+        DELETE FROM permission WHERE permission_id=#{permissionId}
+    </delete>
+
+
+
+</mapper>

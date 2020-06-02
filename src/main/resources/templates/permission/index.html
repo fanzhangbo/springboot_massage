@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>管理员管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-header">
+
+                <button class="btn btn-sm btn-round btn-info" th:onclick="addChild(0)">添加顶级</button>
+              </div>
+              <div class="card-body">
+
+                <form action="#!" method="post">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <tbody>
+
+                      <th:block th:each="permission : ${permissions}" >
+                      <tr>
+                        <td>
+                          <div class="btn-group"  style="margin: .3em 0;">
+                            <button type="button" class="btn btn-secondary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span th:text="${permission.getPermissionName()}">网站管理</span> <span class='caret'></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li><a href="javascript:;" th:onclick="edit([[${permission.permissionId}]])">编辑</a></li>
+                              <li><a href="javascript:;" th:onclick="del([[${permission.permissionId}]])">删除</a></li>
+                              <li><a href="javascript:;" th:onclick="addChild([[${permission.permissionId}]])">添加子菜单</a></li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr th:if=" ${permission.child != null && permission.child.size() > 0}">
+                        <td class="p-l-40">
+                          <div class="btn-group" th:each="child : ${permission.child}"  style="margin: .3em 0;">
+                            <button type="button"  class="btn btn-secondary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                              <span th:text="${child.permissionName}">网站管理</span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li><a href="javascript:;" th:onclick="edit([[${child.permissionId}]])">编辑</a></li>
+                              <li><a href="javascript:;" th:onclick="del([[${child.permissionId}]])">删除</a></li>
+                            </ul>
+                          </div>
+                        </td>
+                      </tr>
+                      </th:block>
+                      </tbody>
+                    </table>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">权限信息</h4>
+      </div>
+      <div class="modal-body">
+        <form  enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="name" class="control-label">名称</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+          <div class="form-group">
+            <label for="url" class="control-label">地址Url</label>
+            <input type="text" class="form-control" id="url">
+          </div>
+          <div class="form-group">
+            <label for="perms" class="control-label">标识</label>
+            <input type="text" class="form-control" id="perms">
+          </div>
+
+        </form>
+      </div>
+      <input type="hidden" name="pid" id="pid" value="0">
+      <input type="hidden" name="permission_id" id="permission_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('.nav-item-has-subnav').addClass('open');
+    $('#n-permission').addClass('active');
+    $("#name").val("");
+    $('#pid').val(0);
+    $('#perms').val("");
+    $('#url').val("");
+    $('#permission_id').val(0);
+
+
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+
+    window.addChild = function(id) {
+        $("#name").val("");
+        $('#pid').val(id);
+        $('#perms').val("");
+        $('#url').val("");
+        $('#permission_id').val(0);
+        $("#addModal").modal('show')
+    };
+
+    window.edit = function(id) {
+        if(id) {
+            $.ajax({
+                url:"/permission/detail",
+                type:"get",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                contentType: false,
+                success:function (data) {
+                    console.log(data)
+                    if (data.code == 1) {
+                        $("#name").val(data.data.permissionName);
+                        $('#perms').val(data.data.perms);
+                        $('#url').val(data.data.url);
+                        $("#permission_id").val(data.data.permissionId);
+                        $("#addModal").modal('show');
+                    } else {
+                        lightyear.loading('show');
+                        // 假设ajax提交操作
+                        setTimeout(function() {
+                            lightyear.loading('hide');
+                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                        }, 1e3)
+                    }
+                }
+            });
+        }
+    }
+
+
+    $("#sub").click(function () {
+
+        var name = $("#name").val();
+        var pid = $("#pid").val()
+        var perms = $("#perms").val()
+        var url = $("#url").val()
+        var permission_id = $("#permission_id").val()
+        if(name == "") {
+            lightyear.notify('信息填写不完整', 'danger', 3000);
+            return false;
+        }
+        var doUrl;
+        var doData;
+        doData = {
+            permissionName:name,
+            perms:perms,
+            url:url
+        };
+
+        if(permission_id != 0) {
+            doUrl = "/permission/editPermission";
+            doData['permissionId'] = permission_id;
+        } else {
+            doUrl = "/permission/addPermission";
+            doData['pid'] = pid;
+        }
+        $.ajax({
+            url:doUrl,
+            type:"post",
+            data:doData,
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    $("#addModal").modal('hide')
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+
+            }
+        });
+
+    });
+
+    window.del = function(id) {
+        if (id) {
+            $.confirm({
+                title: '删除提示提示',
+                content: '确定要删除吗？',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: '确定',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $.ajax({
+                                url:"/permission/delPermission",
+                                type:"get",
+                                data:{
+                                    id:id
+                                },
+                                dataType:"json",
+                                success:function (data) {
+                                    if (data.code == 1) {
+                                        lightyear.notify('删除成功，页面即将刷新~', 'success', 3000);
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1e3);
+
+                                    } else {
+                                        lightyear.loading('show');
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            lightyear.loading('hide');
+                                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                                        }, 1e3)
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: '关闭'
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

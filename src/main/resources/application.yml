@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: massage
+  thymeleaf:
+    cache: false
+  datasource:
+    hikari:
+      connection-timeout: 30000
+      max-lifetime: 1800000
+    username: root
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/springboot_massage?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2b8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    static-path-pattern: /**
+
+
+
+
+
+
+mybatis:
+  type-aliases-package: com.fzb.massage.entity
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+
+# 上传的服务器上的映射文件夹
+#file:
+#  accessPath: /uploads/
+##静态资源对外暴露的访问路径
+#  staticAccessPath=: /uploads/**
+##文件上传目录（注意Linux和Windows上的目录结构不同）
+##file.uploadFolder=/root/uploadFiles/
+#  uploadFolder: F:\java_study\IdeaProjects\SpringBootPro\massage\src\main\resources\static
+

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>管理员管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <form class="pull-right search-bar" method="get" action="/massage/index" role="form">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <input type="hidden" name="search_field" id="search-field" value="name">
+                      <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                      名称<span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="name">名称</a> </li>
+                      </ul>
+                    </div>
+                    <input type="text" class="form-control" value="" name="kw" placeholder="请输入信息">
+                  </div>
+                </form>
+                <div class="toolbar-btn-action">
+                  <button class="btn btn-primary m-r-5" id="addBtn"><i class="mdi mdi-plus"></i> 新增</button>
+                </div>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="role : ${roles}">
+                        <td th:text="${role.roleId}">1</td>
+                        <td th:text="${role.roleName}">第01章 天涯思君不可忘</td>
+                        <td>
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="edit([[${role.roleId}]])" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="choose_perms([[${role.roleId}]])" title="设置权限" data-toggle="tooltip"><i class="mdi mdi-format-list-checks"></i></a>
+
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="del([[${role.roleId}]])" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div id="Page"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">会员信息</h4>
+      </div>
+      <div class="modal-body">
+        <form  enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="name" class="control-label">名称</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+          <div class="form-group">
+            <label for="role_code" class="control-label">代码</label>
+            <input type="text" class="form-control" id="role_code">
+          </div>
+        </form>
+      </div>
+      <input type="hidden" name="role_id" id="role_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--添加-->
+<div class="modal fade" id="listPermission" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="">选择权限</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <form action="#!" method="post">
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                        <tr>
+                          <th>
+                            <label class="lyear-checkbox checkbox-primary">
+                              <input name="checkbox" type="checkbox" id="check-all">
+                              <span> 全选</span>
+                            </label>
+                          </th>
+                        </tr>
+                        </thead>
+                        <tbody id="perms_body">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+        <div class="modal-footer">
+          <input type="hidden" name="role_id" id="perms_role_id" value="0">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="choosePermission">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script type="text/javascript" src="/assets/js/chosen.jquery.min.js"></script>
+
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('.nav-item-has-subnav').addClass('open');
+    $('#n-role').addClass('active');
+
+
+    window.chosn_fun = function() {
+        //动态选择框，上下级选中状态变化
+        $('input.checkbox-parent').on('change', function(){
+            var dataid = $(this).attr("dataid");
+            $('input[dataid^=' + dataid + '-]').prop('checked', $(this).is(':checked'));
+        });
+        $('input.checkbox-child').on('change', function(){
+            var dataid = $(this).attr("dataid");
+            dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+            var parent = $('input[dataid=' + dataid + ']');
+            if($(this).is(':checked')){
+                parent.prop('checked', true);
+                //循环到顶级
+                while(dataid.lastIndexOf("-") != 2){
+                    dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                    parent = $('input[dataid=' + dataid + ']');
+                    parent.prop('checked', true);
+                }
+            }else{
+                //父级
+                if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                    parent.prop('checked', false);
+                    //循环到顶级
+                    while(dataid.lastIndexOf("-") != 2){
+                        dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                        parent = $('input[dataid=' + dataid + ']');
+                        if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                            parent.prop('checked', false);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+    window.choose_perms = function (id) {
+        $('#perms_role_id').val(id)
+        $.ajax({
+            url:"/role/choosePerms",
+            type:"get",
+            data:{
+                id:id
+            },
+            dataType:"json",
+            contentType: false,
+            success:function (data) {
+                console.log(data)
+                if (data.code == 1) {
+
+                    var perms = data.data.permissions;
+                    var rolePermissions = data.data.rolePermissions;
+                    var rolePermissionsArr = new Array();
+
+                    for (var rp in rolePermissions) {
+                        rolePermissionsArr.push(rolePermissions[rp].permissionId)
+                    }
+                    var html = "";
+                    for (var item in perms) {
+                      html += '<tr><td><label class="lyear-checkbox checkbox-primary">'
+                      html += '<input name="rules[]" type="checkbox" '
+                      if (rolePermissionsArr.indexOf(perms[item].permissionId) > -1) {
+                          html += ' checked '
+                      }
+                      html +=' class="checkbox-parent checkbox-child" dataid="id-'+perms[item].permissionId+'" value="'+perms[item].permissionId+'">'
+                      html += '<span>'+perms[item].permissionName+'</span></label></td></tr>'
+                      if (perms[item].child.length > 0) {
+                          html += '<tr><td class="p-l-40">'
+                          for (var subitem in perms[item].child) {
+                            html += '<label class="lyear-checkbox checkbox-primary checkbox-inline">'
+                            html += '<input name="rules[]" type="checkbox" '
+
+                            if (rolePermissionsArr.indexOf(perms[item].child[subitem].permissionId) > -1) {
+                                html += ' checked '
+                            }
+
+                            html += ' class="checkbox-child" dataid="id-'+perms[item].permissionId+'-'+perms[item].child[subitem].permissionId+'" value="'+perms[item].child[subitem].permissionId+'">'
+                            html += '<span>'+perms[item].child[subitem].permissionName+'</span></label>'
+
+                          }
+                          html += '</td></tr>'
+                      }
+                    }
+
+                    $("#perms_body").html(html);
+                    chosn_fun();
+                    $("#listPermission").modal('show');
+
+
+
+
+                } else {
+                    lightyear.loading('show');
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        lightyear.loading('hide');
+                        lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                    }, 1e3)
+                }
+            }
+        });
+
+
+
+
+    }
+
+
+    $("#addBtn").click(function () {
+        $("#name").val("");
+        $("#role_code").val("");
+        $("#role_id").val(0)
+        $("#addModal").modal('show')
+    });
+
+
+    $("#Page").pagination({
+        /*<![CDATA[*/
+        current: /*[[${#httpServletRequest.getParameter('pageNum') ?: 1}]]*/ 1,  // 默认为1
+        /*]]>*/
+        pageSize: 6,  // 默认为10
+        total: /*[[${pageTotal}]]*/ 0,  // 默认0
+        callback: function (pageno, pagination) {
+            var kw = /*[[${#httpServletRequest.getParameter('kw')}]]*/ "";
+            window.location.href = "/role/index?pageNum=" + pageno;
+        }
+    });
+
+    window.edit = function(id) {
+        if(id) {
+            $.ajax({
+                url:"/role/detail",
+                type:"get",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                contentType: false,
+                success:function (data) {
+                    console.log(data)
+                    if (data.code == 1) {
+                        $("#name").val(data.data.roleName);
+                        $("#role_code").val(data.data.roleCode);
+                        $("#role_id").val(data.data.roleId);
+                        $("#addModal").modal('show');
+                    } else {
+                        lightyear.loading('show');
+                        // 假设ajax提交操作
+                        setTimeout(function() {
+                            lightyear.loading('hide');
+                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                        }, 1e3)
+                    }
+                }
+            });
+        }
+    }
+
+
+    $("#choosePermission").click(function () {
+
+
+        var permsArr = [];
+        $('.checkbox-child').each(function () {
+            if ($(this).prop('checked')) {
+                permsArr.push($(this).val());
+            }
+        })
+        console.log(permsArr.join(','));
+
+        $.ajax({
+            url:'/role/choosePerms',
+            type:"post",
+            data:{
+                permsStr: permsArr.join(','),
+                roleId: $("#perms_role_id").val()
+            },
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    $("#addModal").modal('hide')
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+
+            }
+        });
+
+    });
+
+    $("#sub").click(function () {
+
+        var name = $("#name").val();
+        var role_code = $("#role_code").val();
+        var role_id = $("#role_id").val()
+        if(name == "") {
+            lightyear.notify('信息填写不完整', 'danger', 3000);
+            return false;
+        }
+        var doUrl;
+        var doData;
+        doData = {
+            roleName:name,
+            roleCode:role_code
+        };
+
+
+        if(role_id != 0) {
+            doUrl = "/role/editRole";
+            doData['roleId'] = role_id;
+        } else {
+            doUrl = "/role/addRole";
+        }
+        $.ajax({
+            url:doUrl,
+            type:"post",
+            data:doData,
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    $("#addModal").modal('hide')
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+
+            }
+        });
+
+    });
+
+    window.del = function(id) {
+        if (id) {
+            $.confirm({
+                title: '删除提示提示',
+                content: '确定要删除吗？',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: '确定',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $.ajax({
+                                url:"/role/delRole",
+                                type:"get",
+                                data:{
+                                    id:id
+                                },
+                                dataType:"json",
+                                success:function (data) {
+                                    if (data.code == 1) {
+                                        lightyear.notify('删除成功，页面即将刷新~', 'success', 3000);
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1e3);
+
+                                    } else {
+                                        lightyear.loading('show');
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            lightyear.loading('hide');
+                                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                                        }, 1e3)
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: '关闭'
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

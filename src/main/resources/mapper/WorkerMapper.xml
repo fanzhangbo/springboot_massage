@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.WorkerMapper">
+    <select id="listWorker" parameterType="Map" resultType="Worker" >
+        SELECT * FROM worker WHERE 1=1
+        <if test="name != null and name != ''" >
+            AND name=#{name}
+        </if>
+        ORDER BY id DESC
+
+    </select>
+
+    <select id="findWorkerById" parameterType="Long" resultType="Worker" >
+        select * FROM worker WHERE id=#{id}
+    </select>
+
+    <insert id="addWorker" parameterType="Worker" >
+        INSERT INTO worker(name,img,salary_type,create_time) VALUES (#{name},#{img},#{salaryType},#{createTime})
+    </insert>
+
+    <update id="updateWorker" parameterType="Worker">
+        UPDATE worker
+        <set>
+            <if test="name != null and name != ''">
+                name=#{name}
+            </if>
+            <if test="img != null and img != ''">
+                ,img=#{img}
+            </if>
+            <if test="salaryType != null and salaryType != ''">
+                ,salary_type=#{salaryType}
+            </if>
+        </set>
+         WHERE id=#{id}
+    </update>
+
+    <delete id="delWorker" parameterType="Long">
+        DELETE FROM worker WHERE id=#{id}
+    </delete>
+</mapper>

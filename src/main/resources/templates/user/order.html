@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>会员管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <div class="toolbar-btn-action">
+                  <a class="btn btn-default m-r-5" href="javascript:history.go(-1)" ><i class="mdi mdi-reply"></i> 返回</a>
+                </div>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>姓名</th>
+                        <th>技师</th>
+                        <th>服务</th>
+                        <th>预约时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="massageOrder : ${massageOrders}">
+                        <td th:text="${massageOrder.id}">1</td>
+                        <td th:text="${massageOrder.username}">1</td>
+                        <td th:text="${massageOrder.workerName}">1</td>
+                        <td th:text="${massageOrder.massageName}">1</td>
+                        <td th:text="${#dates.format(massageOrder.createTime, 'yyyy-MM-dd HH:mm:ss')}">1</td>
+                        <td  th:switch="${massageOrder.status}">
+                            <button th:case="0" class="btn btn-primary btn-xs" type="button">预约中</button>
+                            <button th:case="1" class="btn btn-danger btn-xs" type="button">已到店</button>
+                        </td>
+                        <td>
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="edit([[${massageOrder.id}]])" title="更新状态" data-toggle="tooltip"><i class="mdi mdi-toggle-switch"></i></a>
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="del([[${massageOrder.id}]])" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div id="Page"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">更新状态</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label class="lyear-radio radio-inline radio-primary">
+              <input type="radio" name="status" value="0"><span>预约中</span>
+            </label>
+            <label class="lyear-radio radio-inline radio-primary">
+              <input type="radio" name="status" value="1"><span>已到店</span>
+            </label>
+          </div>
+        </form>
+      </div>
+      <input type="hidden" name="order_id" id="order_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('#n-user').addClass('active');
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+    $("#Page").pagination({
+        current: /*[[${#httpServletRequest.getParameter('pageNum')}]]*/ 1,  // 默认为1
+        pageSize: 6,  // 默认为10
+        total: /*[[${pageTotal}]]*/ 1,  // 默认0
+        callback: function (pageno, pagination) {
+            var kw = /*[[${#httpServletRequest.getParameter('kw')}]]*/ "";
+            window.location.href = "/user/order?pageNum=" + pageno;
+        }
+    });
+
+    window.edit = function(id) {
+        if(id) {
+            $.ajax({
+                url:"/user/orderDetail",
+                type:"get",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                success:function (data) {
+                    console.log(data)
+                    if (data.code == 1) {
+                        $("#order_id").val(data.data.id);
+                        $(":radio[name='status'][value='" + data.data.status + "']").prop("checked", "checked");
+                        $("#addModal").modal('show');
+                    } else {
+                        lightyear.loading('show');
+                        // 假设ajax提交操作
+                        setTimeout(function() {
+                            lightyear.loading('hide');
+                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                        }, 1e3)
+                    }
+                }
+            });
+        }
+    }
+
+    $("#sub").click(function () {
+        var status = $("input:radio[name='status']:checked").val();
+        var order_id = $("#order_id").val();
+
+        $.ajax({
+            url:'/user/editOrder',
+            type:"post",
+            data:{
+                id:order_id,
+                status:status
+            },
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+                $("#username").val("")
+                $("#phone").val("")
+                $("#user_id").val(0)
+            }
+        });
+
+    });
+
+    window.del = function(id) {
+        if (id) {
+            $.confirm({
+                title: '删除提示提示',
+                content: '确定要删除吗？',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: '确定',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $.ajax({
+                                url:"/user/delUser",
+                                type:"get",
+                                data:{
+                                    id:id
+                                },
+                                dataType:"json",
+                                success:function (data) {
+                                    if (data.code == 1) {
+                                        lightyear.notify('修改成功，页面即将刷新~', 'success', 3000);
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 3e3);
+
+                                    } else {
+                                        lightyear.loading('show');
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            lightyear.loading('hide');
+                                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                                        }, 1e3)
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: '关闭'
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

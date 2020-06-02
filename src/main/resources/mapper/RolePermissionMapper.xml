@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.RolePermissionMapper">
+
+
+    <select id="listRolePermissionByRoleId" parameterType="long" resultType="rolePermission">
+        SELECT rp.id,rp.role_id,rp.permission_id FROM role_permission rp
+        WHERE rp.role_id=#{roleId}
+    </select>
+
+    <insert id="insertList">
+        INSERT INTO role_permission(role_id,permission_id) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.roleId}, #{item.permissionId})
+        </foreach>
+    </insert>
+
+
+    <delete id="removeByRoleId" parameterType="Long">
+        DELETE FROM role_permission WHERE role_id=#{roleId}
+    </delete>
+
+
+
+</mapper>

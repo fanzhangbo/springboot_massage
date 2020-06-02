@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+                xmlns:shiro="http://www.thymeleaf.org/thymeleaf-extras-shiro">
+
+<head th:fragment="headInfo(title,link)">
+
+    <th:block th:if="${title == null}">
+        <title>首页 - 后台管理系统</title>
+    </th:block>
+    <th:block th:if="${title != null}">
+        <title th:replace="${title}">title</title>
+    </th:block>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/materialdesignicons.min.css}" rel="stylesheet">
+    <link th:href="@{/assets/css/style.min.css}" rel="stylesheet">
+
+    <th:block th:if="${link != null}">
+        <th:block th:replace="${link}"></th:block>
+    </th:block>
+</head>
+
+<!--左侧导航-->
+<aside class="lyear-layout-sidebar" th:fragment="leftNavInfo">
+
+    <!-- logo -->
+    <div id="logo" class="sidebar-header">
+        <a href="/">
+            <div style="max-width: 240px;margin: 16px 0;text-align: center;font-size: 24px">后台管理</div>
+        </a>
+    </div>
+    <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+            <ul class="nav nav-drawer">
+                <li class="nav-item" id="n-home"> <a href="/index"><i class="mdi mdi-home"></i> 后台首页</a> </li>
+
+                <li shiro:hasRole="role:userManager"  class="nav-item" id="n-user"> <a href="/user/index"><i class="mdi mdi-account"></i> 会员管理</a> </li>
+
+                <li shiro:hasRole="role:massageManager" class="nav-item" id="n-massage"> <a href="/massage/index"><i class="mdi mdi-collage"></i> 服务管理</a> </li>
+                <li shiro:hasRole="role:workerManager" class="nav-item" id="n-worker"> <a href="/worker/index"><i class="mdi mdi-widgets"></i> 技师管理</a> </li>
+                <li shiro:hasRole="role:adminManager" class="nav-item nav-item-has-subnav">
+                    <a href="javascript:void(0)"><i class="mdi mdi-widgets"></i> 管理员管理</a>
+                    <ul class="nav nav-subnav">
+                        <li class="nav-item" id="n-admin"> <a href="/admin/index">管理员管理</a> </li>
+                        <li class="nav-item" id="n-role"> <a href="/role/index">角色管理</a> </li>
+                        <li class="nav-item" id="n-permission"> <a href="/permission/index">权限管理</a> </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+
+</aside>
+<!--End 左侧导航-->
+
+<!--头部信息-->
+<header class="lyear-layout-header" th:fragment="headNavInfo">
+
+    <nav class="navbar navbar-default">
+        <div class="topbar">
+
+            <div class="topbar-left">
+                <div class="lyear-aside-toggler">
+                    <span class="lyear-toggler-bar"></span>
+                    <span class="lyear-toggler-bar"></span>
+                    <span class="lyear-toggler-bar"></span>
+                </div>
+            </div>
+
+            <ul class="topbar-right">
+                <li class="dropdown dropdown-profile">
+                    <a href="javascript:void(0)" data-toggle="dropdown">
+                        <span th:text="${session.loginAdmin.name}"></span> <span class="caret"></span>
+                    </a>
+
+                    <ul  class="dropdown-menu dropdown-menu-right">
+                        <li> <a th:href="@{/logout}"><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+</header>
+<!--End 头部信息-->
+
+<body>
+
+
+<th:block th:fragment="scriptInfo">
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="/assets/js/main.min.js"></script>
+</th:block>
+
+</body>
+</html>

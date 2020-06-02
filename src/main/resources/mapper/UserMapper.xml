@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.UserMapper">
+    <select id="listUser" parameterType="Map" resultType="User">
+        SELECT * FROM user WHERE 1=1
+        <if test="phone != null and phone != ''" >
+            AND phone=#{phone}
+        </if>
+        <if test="username != null and username != ''" >
+            AND username=#{username}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="findUserByUsername" parameterType="String" resultType="User">
+        select * FROM user WHERE username=#{username}
+    </select>
+
+    <select id="findUserById" parameterType="Long" resultType="User" >
+        select * FROM user WHERE id=#{id}
+    </select>
+
+    <insert id="addUser" parameterType="User" >
+        INSERT INTO user(username,phone,password,create_time) VALUES (#{username},#{phone},#{password},#{createTime})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE user
+        <set>
+            <if test="username != null and username != ''">
+                username=#{username}
+            </if>
+            <if test="phone != null and phone != ''">
+                ,phone=#{phone}
+            </if>
+            <if test="password != null and password != ''">
+                ,password=#{password}
+            </if>
+            <if test="money != null and money != ''">
+                ,money=#{money}
+            </if>
+        </set>
+         WHERE id=#{id}
+    </update>
+
+    <delete id="delUser" parameterType="Long">
+        DELETE FROM user WHERE id=#{id}
+    </delete>
+</mapper>

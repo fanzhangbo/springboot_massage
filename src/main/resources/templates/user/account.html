@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>会员管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <div class="toolbar-btn-action">
+                  <a class="btn btn-default m-r-5" href="javascript:history.go(-1)" ><i class="mdi mdi-reply"></i> 返回</a>
+                  <a class="btn btn-primary m-r-5" href="javascript:;"   data-toggle="modal" data-target="#addModal" data-whatever="@mdo" ><i class="mdi mdi-plus"></i> 新增</a>
+                  余额：<th:block th:text="${userMoney}"/>元
+                </div>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>类型</th>
+                        <th>金额</th>
+                        <th>创建时间</th>
+                        <th>备注</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="account : ${accounts}">
+                        <td th:text="${account.id}">1</td>
+                        <td  th:switch="${account.type}">
+                          <button th:case="1" class="btn btn-primary btn-xs" type="button">消费</button>
+                          <button th:case="2" class="btn btn-danger btn-xs" type="button">充值</button>
+                        </td>
+                        <td th:text="${account.money}">1</td>
+                        <td th:text="${#dates.format(account.createTime, 'yyyy-MM-dd HH:mm:ss')}">1</td>
+                        <td th:text="${account.remark}">1</td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div id="Page"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">更新状态</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label class="lyear-radio radio-inline radio-primary">
+              <input type="radio" name="type" value="1"><span>消费</span>
+            </label>
+            <label class="lyear-radio radio-inline radio-primary">
+              <input type="radio" name="type" value="2"><span>充值</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="money" class="control-label">金额</label>
+            <input type="number" class="form-control" id="money">
+          </div>
+          <div class="form-group">
+            <label for="remark" class="control-label">备注：</label>
+            <input type="text" class="form-control" id="remark">
+          </div>
+        </form>
+      </div>
+      <input type="hidden" name="user_id" id="user_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('#n-user').addClass('active');
+    var userId = /*[[${#httpServletRequest.getParameter('userId')}]]*/ "";
+    $("#user_id").val(userId);
+
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+    $("#Page").pagination({
+        current: /*[[${#httpServletRequest.getParameter('pageNum')}]]*/ 1,  // 默认为1
+        pageSize: 6,  // 默认为10
+        total: /*[[${pageTotal}]]*/ 1,  // 默认0
+        callback: function (pageno, pagination) {
+            var kw = /*[[${#httpServletRequest.getParameter('kw')}]]*/ "";
+            window.location.href = "/user/account?pageNum=" + pageno;
+        }
+    });
+
+    $("#sub").click(function () {
+        var type = $("input:radio[name='type']:checked").val();
+        var user_id = $("#user_id").val();
+        var money = $("#money").val();
+        var remark = $("#remark").val();
+
+        $.ajax({
+            url:'/user/addAccount',
+            type:"post",
+            data:{
+                userId:user_id,
+                type:type,
+                money:money,
+                remark:remark
+            },
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+            }
+        });
+
+    });
+});
+</script>
+</body>
+</html>

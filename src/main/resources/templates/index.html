@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})"></div>
+  
+<body>
+
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      <div class="container-fluid">
+        <div class="row">
+
+          <div class="col-sm-6 col-lg-3">
+            欢迎访问后台管理系统
+          </div>
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

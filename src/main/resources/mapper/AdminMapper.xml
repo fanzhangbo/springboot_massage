@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.AdminMapper">
+    <resultMap id="adminMap" type="admin">
+        <id property="adminId" column="admin_id"></id>
+        <result property="name" column="name"></result>
+        <result property="password" column="password"></result>
+        <collection property="roles" ofType="role">
+            <id property="roleId" column="role_id"></id>
+            <result property="roleName" column="role_name"></result>
+        </collection>
+    </resultMap>
+
+
+    <select id="listAdmin" resultType="admin">
+        SELECT admin_id,name FROM admin
+    </select>
+
+    <select id="findAdminByName" parameterType="string" resultType="admin">
+        SELECT admin_id,name,password,perms FROM admin WHERE name=#{name}
+    </select>
+
+
+    <select id="findAdminRole" resultMap="adminMap" >
+        SELECT r.*,a.* FROM admin a
+        LEFT JOIN admin_role ar on a.id=ar.admin_id
+        LEFT JOIN role r on r.id=ar.role_id
+    </select>
+
+
+    <select id="findAdminById" parameterType="Long" resultType="admin" >
+        select admin_id,name FROM admin WHERE admin_id=#{adminId}
+    </select>
+
+    <insert id="addAdmin" parameterType="admin" >
+        INSERT INTO admin(name,password) VALUES (#{name},#{password})
+    </insert>
+
+    <update id="updateAdmin" parameterType="Admin">
+        UPDATE admin
+        <set>
+            <if test="name != null and name != ''">
+                name=#{name}
+            </if>
+            <if test="password != null and password != ''">
+                 password=#{password}
+            </if>
+        </set>
+        WHERE admin_id=#{adminId}
+    </update>
+
+    <delete id="delAdmin" parameterType="Long">
+        DELETE FROM admin WHERE admin_id=#{adminId}
+    </delete>
+
+</mapper>

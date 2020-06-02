@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>会员管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <form class="pull-right search-bar" method="get" action="/user/index" role="form">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <input type="hidden" name="search_field" id="search-field" value="phone">
+                      <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                      手机号<span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="phone">手机号</a> </li>
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="name">姓名</a> </li>
+                      </ul>
+                    </div>
+                    <input type="text" class="form-control" value="" name="kw" placeholder="请输入信息">
+                  </div>
+                </form>
+                <div class="toolbar-btn-action">
+                  <a class="btn btn-primary m-r-5" href="javascript:void(0);"  data-toggle="modal" data-target="#addModal" data-whatever="@mdo"><i class="mdi mdi-plus"></i> 新增</a>
+                </div>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>日期</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.username}">1</td>
+                        <td th:text="${user.phone}">1</td>
+                        <td th:text="${#dates.format(user.createTime, 'yyyy-MM-dd HH:mm:ss')}">金庸</td>
+                        <td>
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" th:href="@{'/user/order?userId='+${user.id}}"  title="预约" data-toggle="tooltip"><i class="mdi mdi-format-list-bulleted"></i></a>
+                            <a class="btn btn-xs btn-default" th:href="@{'/user/account?userId='+${user.id}}"  title="账单" data-toggle="tooltip"><i class="mdi mdi-cash-usd"></i></a>
+
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="edit([[${user.id}]])" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="del([[${user.id}]])" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div id="Page"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">会员信息</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="username" class="control-label">姓名</label>
+            <input type="text" class="form-control" id="username">
+          </div>
+          <div class="form-group">
+            <label for="phone" class="control-label">电话：</label>
+            <input type="text" class="form-control" id="phone">
+          </div>
+          <div class="form-group">
+            <label for="password" class="control-label">密码：</label>
+            <input type="text" class="form-control" id="password">
+          </div>
+        </form>
+      </div>
+      <input type="hidden" name="user_id" id="user_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('#n-user').addClass('active');
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+    $("#Page").pagination({
+        /*<![CDATA[*/
+        current: /*[[${#httpServletRequest.getParameter('pageNum') ?: 1}]]*/ 1,  // 默认为1
+        /*]]>*/
+        pageSize: 6,  // 默认为10
+        total: /*[[${pageTotal}]]*/ 1,  // 默认0
+        callback: function (pageno, pagination) {
+            var kw = /*[[${#httpServletRequest.getParameter('kw')}]]*/ "";
+            window.location.href = "/user/index?pageNum=" + pageno;
+        }
+    });
+
+    // 关闭重置
+    $('#addModal').on('hidden.bs.modal', function () {
+        $("#username").val("")
+        $("#password").val("")
+        $("#phone").val("")
+        $("#user_id").val(0)
+    });
+
+    window.edit = function(id) {
+        if(id) {
+            $.ajax({
+                url:"/user/detail",
+                type:"get",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                success:function (data) {
+                    console.log(data)
+                    if (data.code == 1) {
+                        $("#username").val(data.data.username);
+                        $("#phone").val(data.data.phone);
+                        $("#user_id").val(data.data.id);
+                        $("#addModal").modal('show');
+                    } else {
+                        lightyear.loading('show');
+                        // 假设ajax提交操作
+                        setTimeout(function() {
+                            lightyear.loading('hide');
+                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                        }, 1e3)
+                    }
+                }
+            });
+        }
+    }
+
+    $("#sub").click(function () {
+
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var phone = $("#phone").val();
+        var user_id = $("#user_id").val()
+        if(username == "" || phone == "") {
+            lightyear.notify('信息填写不完整', 'danger', 3000);
+            return false;
+        }
+        var doUrl;
+        var doData;
+        if(user_id != 0) {
+            doUrl = "/user/editUser",
+            doData = {
+                id:user_id,
+                username:username,
+                phone:phone
+            }
+        } else {
+            doUrl = "/user/addUser",
+            doData = {
+                username:username,
+                phone:phone
+            }
+        }
+        if (password) {
+            doData["password"] = password;
+        }
+
+        $.ajax({
+            url:doUrl,
+            type:"post",
+            data:doData,
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+                $("#username").val("")
+                $("#password").val("")
+                $("#phone").val("")
+                $("#user_id").val(0)
+            }
+        });
+
+    });
+
+    window.del = function(id) {
+        if (id) {
+            $.confirm({
+                title: '删除提示提示',
+                content: '确定要删除吗？',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: '确定',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $.ajax({
+                                url:"/user/delUser",
+                                type:"get",
+                                data:{
+                                    id:id
+                                },
+                                dataType:"json",
+                                success:function (data) {
+                                    if (data.code == 1) {
+                                        lightyear.notify('修改成功，页面即将刷新~', 'success', 3000);
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 3e3);
+
+                                    } else {
+                                        lightyear.loading('show');
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            lightyear.loading('hide');
+                                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                                        }, 1e3)
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: '关闭'
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

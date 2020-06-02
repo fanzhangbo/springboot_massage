@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="common/template::headInfo(~{::title},~{::link})">
+  <title>服务管理 - 后台管理系统</title>
+  <link th:href="@{/pagination/jquery.pagination.css}" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/assets/js/jconfirm/jquery-confirm.min.css}">
+
+</div>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <div th:replace="common/template::leftNavInfo"></div>
+    <!--End 左侧导航-->
+    <!--头部信息-->
+    <div th:replace="common/template::headNavInfo"></div>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <form class="pull-right search-bar" method="get" action="/massage/index" role="form">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <input type="hidden" name="search_field" id="search-field" value="name">
+                      <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                      名称<span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="name">名称</a> </li>
+                      </ul>
+                    </div>
+                    <input type="text" class="form-control" value="" name="kw" placeholder="请输入信息">
+                  </div>
+                </form>
+                <div class="toolbar-btn-action">
+                  <button class="btn btn-primary m-r-5" id="addBtn"><i class="mdi mdi-plus"></i> 新增</button>
+                </div>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>价格</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="massage : ${massages}">
+                        <td th:text="${massage.id}">1</td>
+                        <td th:text="${massage.name}">第01章 天涯思君不可忘</td>
+                        <td th:text="${massage.price}">《倚天屠龙记》</td>
+                        <td>
+                          <div class="btn-group">
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="edit([[${massage.id}]])" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                            <a class="btn btn-xs btn-default" href="javascript:;" th:onclick="del([[${massage.id}]])" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div id="Page"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+
+
+
+
+<!--添加-->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">会员信息</h4>
+      </div>
+      <div class="modal-body">
+        <form  enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="name" class="control-label">名称</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+
+          <div class="form-group">
+            <label for="img" class="control-label">图片</label><br />
+            <img src="" style="width:60%;" id="img_src" />
+            <input type="file" id="img" onchange="show_img(this)">
+          </div>
+
+          <div class="form-group">
+            <label for="description" class="control-label">简介：</label>
+            <textarea class="form-control" id="description" rows="5"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="price" class="control-label">价格</label>
+            <input type="number" class="form-control" id="price">
+          </div>
+        </form>
+      </div>
+      <input type="hidden" name="massage_id" id="massage_id" value="0">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="sub">提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script th:replace="common/template :: scriptInfo"></script>
+
+<script src="/assets/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="/assets/js/lightyear.js"></script>
+<script src="/assets/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="/pagination/jquery.pagination.js"></script>
+<script th:inline="javascript">
+$(function(){
+    $('.nav-item').removeClass('active');
+    $('#n-massage').addClass('active');
+
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+
+    window.show_img = function(obj){
+        var reader = new FileReader();	// 实例化一个FileReader对象，用于读取文件
+        var img = document.getElementById('img_src'); 	// 获取要显示图片的标签
+        //读取File对象的数据
+        reader.onload = function(evt){
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(obj.files[0]);
+    };
+
+    $("#addBtn").click(function () {
+        $("#name").val("");
+        $("#img_src").attr('src', "/uploads/default.jpg");
+        $("#description").val("")
+        $("#price").val(0)
+        $("#massage_id").val(0)
+        $("#addModal").modal('show')
+    });
+
+
+    $("#Page").pagination({
+        /*<![CDATA[*/
+        current: /*[[${#httpServletRequest.getParameter('pageNum') ?: 1}]]*/ 1,  // 默认为1
+        /*]]>*/
+        pageSize: 6,  // 默认为10
+        total: /*[[${pageTotal}]]*/ 0,  // 默认0
+        callback: function (pageno, pagination) {
+            var kw = /*[[${#httpServletRequest.getParameter('kw')}]]*/ "";
+            window.location.href = "/massage/index?pageNum=" + pageno;
+        }
+    });
+
+    window.edit = function(id) {
+        if(id) {
+            $.ajax({
+                url:"/massage/detail",
+                type:"get",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                contentType: false,
+                success:function (data) {
+                    console.log(data)
+                    if (data.code == 1) {
+                        $("#name").val(data.data.name);
+                        $("#img_src").attr("src", data.data.img);
+                        $("#massage_id").val(data.data.id);
+                        $("#description").val(data.data.description);
+                        $("#price").val(data.data.price);
+                        $("#addModal").modal('show');
+                    } else {
+                        lightyear.loading('show');
+                        // 假设ajax提交操作
+                        setTimeout(function() {
+                            lightyear.loading('hide');
+                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                        }, 1e3)
+                    }
+                }
+            });
+        }
+    }
+
+
+    $("#sub").click(function () {
+
+        var name = $("#name").val();
+        var massage_id = $("#massage_id").val()
+        var description = $("#description").val()
+        var price = $("#price").val()
+        var duration = $("#duration").val()
+        if(name == "") {
+            lightyear.notify('信息填写不完整', 'danger', 3000);
+            return false;
+        }
+        var doUrl;
+        var doData;
+        doData = {
+            name:name,
+            description:description,
+            price:price
+        };
+        var myform = new FormData();
+        if($('#img')[0].files[0]) {
+            myform.append('img',$('#img')[0].files[0]);
+            // 上传图片
+            $.ajax({
+                url:"/massage/uploadImg",
+                type:"post",
+                data:myform,
+                dataType:"json",
+                processData: false,
+                contentType: false,
+                async: false,
+                success:function (data) {
+                    if (data.code == 1) {
+                        doData['img'] = data.data.fileUrl
+                        lightyear.notify('图片上传成功~', 'success', 1000);
+                    } else {
+                        lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                    }
+
+                }
+            });
+        }
+
+
+        if(massage_id != 0) {
+            doUrl = "/massage/editMassage";
+            doData['id'] = massage_id;
+        } else {
+            doUrl = "/massage/addMassage";
+        }
+        $.ajax({
+            url:doUrl,
+            type:"post",
+            data:doData,
+            dataType:"json",
+            success:function (data) {
+                if (data.code == 1) {
+                    $("#addModal").modal('hide')
+                    lightyear.notify('操作成功，页面即将刷新~', 'success', 1000);
+                    // 假设ajax提交操作
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1e3);
+                } else {
+                    lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                }
+
+            }
+        });
+
+    });
+
+    window.del = function(id) {
+        if (id) {
+            $.confirm({
+                title: '删除提示提示',
+                content: '确定要删除吗？',
+                type: 'red',
+                typeAnimated: true,
+                buttons: {
+                    tryAgain: {
+                        text: '确定',
+                        btnClass: 'btn-red',
+                        action: function(){
+                            $.ajax({
+                                url:"/massage/delMassage",
+                                type:"get",
+                                data:{
+                                    id:id
+                                },
+                                dataType:"json",
+                                success:function (data) {
+                                    if (data.code == 1) {
+                                        lightyear.notify('删除成功，页面即将刷新~', 'success', 3000);
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 3e3);
+
+                                    } else {
+                                        lightyear.loading('show');
+                                        // 假设ajax提交操作
+                                        setTimeout(function() {
+                                            lightyear.loading('hide');
+                                            lightyear.notify('操作失败，请稍后再试~', 'danger', 100);
+                                        }, 1e3)
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: '关闭'
+                    }
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fzb.massage.mapper.RoleMapper">
+    <resultMap id="roleMap" type="role">
+        <id property="roleId" column="role_id"></id>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleCode" column="role_code"></result>
+    </resultMap>
+
+
+    <select id="listRole" resultType="role">
+        SELECT role_id,role_name,role_code FROM role
+    </select>
+    
+    
+    <select id="listRoleByAdminId" parameterType="Long" resultType="role">
+        SELECT r.role_id,r.role_name,r.role_code FROM role r
+        INNER JOIN admin_role ar ON r.role_id=ar.role_id
+        WHERE ar.admin_id=#{adminId}
+    </select>
+
+
+    <select id="findRoleById" parameterType="Long" resultType="role" >
+        select role_id,role_name,role_code FROM role WHERE role_id=#{roleId}
+    </select>
+
+    <insert id="addRole" parameterType="role" >
+        INSERT INTO role(role_name,role_code) VALUES (#{roleName},#{roleCode})
+    </insert>
+
+    <update id="updateRole" parameterType="Long">
+        UPDATE role
+        <set>
+            <if test="roleName != null and roleName != ''">
+                role_name=#{roleName}
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                ,role_code=#{roleCode} 
+            </if>
+        </set>
+        WHERE role_id=#{roleId}
+    </update>
+
+    <delete id="delRole" parameterType="Long">
+        DELETE FROM role WHERE role_id=#{roleId}
+    </delete>
+
+</mapper>
