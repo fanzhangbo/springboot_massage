@@ -57,7 +57,7 @@ public class IndexController {
     public String doLogin(String username, String password, Model model,
                           HttpSession session, String inputStr) {
 
-        //从session中获取随机数
+        // 从session中获取验证码
         String random = (String) session.getAttribute("RANDOMVALIDATECODEKEY");
         System.out.println(inputStr);
         System.out.println(random);
